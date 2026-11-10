@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة العملاء العقارية | Real Estate Mini-CRM</title>
+    <meta name="description" content="أداة ويب خفيفة وسريعة لإدارة العملاء والصفقات العقارية مباشرة من المتصفح.">
+    
+    <!-- Favicon SVG -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23d4af37'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg>">
+
+    <!-- Google Fonts: Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- CSS Styles -->
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #555555;
+            --accent-gold: #c5a059;
+            --accent-gold-hover: #b08d46;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 12px;
+            --tag-bg: rgba(197, 160, 89, 0.1);
+        }
+
+        .dark {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-card: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-gold: #d4af37;
+            --accent-gold-hover: #e5c158;
+            --border-color: #374151;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            --tag-bg: rgba(212, 175, 55, 0.15);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            background-color: var(--bg-secondary);
+            padding: 1.25rem 2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--accent-gold);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card h4 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .number {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent-gold);
+        }
+
+        /* Main Grid Layout */
+        .crm-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 992px) {
+            .crm-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.85rem;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 1rem;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-hover));
+            color: #0b0f19;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        /* Search & Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar input, .filter-bar select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Table & List View */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-weight: 700;
+            color: var(--text-secondary);
+            background-color: var(--bg-primary);
+        }
+
+        tr:hover td {
+            background-color: rgba(197, 160, 89, 0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background-color: var(--tag-bg);
+            color: var(--accent-gold);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .whatsapp-action {
+            background-color: #25d366;
+            color: #fff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: var(--transition);
+        }
+
+        .whatsapp-action:hover {
+            background-color: #20ba5a;
+        }
+
+        .delete-action {
+            color: #ef4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--accent-gold)"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg>
+                إدارة العملاء <span>العقارية</span>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="theme-toggle" aria-label="تبديل الوضع">🌙</button>
+            </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>إجمالي العملاء</h4>
+                <div class="number" id="totalClients">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>العملاء المهتمون بالشراء</h4>
+                <div class="number" id="buyClients">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>الصفقات المكتملة</h4>
+                <div class="number" id="closedClients">0</div>
+            </div>
+        </div>
+
+        <!-- CRM Grid -->
+        <div class="crm-grid">
+            <!-- Add Client Form -->
+            <div class="card">
+                <h3>إضافة عميل عقاري جديد</h3>
+                <form id="clientForm">
+                    <div class="form-group">
+                        <label for="clientName">اسم العميل</label>
+                        <input type="text" id="clientName" class="form-control" placeholder="مثال: محمد الأحمد" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientPhone">رقم الهاتف (مع رمز الدولة)</label>
+                        <input type="tel" id="clientPhone" class="form-control" placeholder="963991234567+" required dir="ltr" style="text-align: right;">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientType">نوع الطلب</label>
+                        <select id="clientType" class="form-control">
+                            <option value="شراء">شراء عقار</option>
+                            <option value="إيجار">إيجار عقار</option>
+                            <option value="استثمار">استثمار عقاري</option>
+                            <option value="عرض عقار للبيع">عرض عقار للبيع</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientBudget">الميزانية أو التفاصيل</label>
+                        <input type="text" id="clientBudget" class="form-control" placeholder="مثال: شقة 3 غرف - 50 ألف دولار">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientStatus">حالة العميل</label>
+                        <select id="clientStatus" class="form-control">
+                            <option value="مهتم جديد">مهتم جديد</option>
+                            <option value="تم التواصل">تم التواصل</option>
+                            <option value="تم إرسال عروض">تم إرسال عروض</option>
+                            <option value="معاينة ميدانية">معاينة ميدانية</option>
+                            <option value="تمت الصفقة">تمت الصفقة بنجاح</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">حفظ وتوثيق العميل</button>
+                </form>
+            </div>
+
+            <!-- Clients List & Table -->
+            <div class="card">
+                <h3>قائمة العملاء والمتابعة</h3>
+                
+                <div class="filter-bar">
+                    <input type="text" id="searchInput" class="form-control" placeholder="ابحث بالاسم أو التفاصيل...">
+                    <select id="statusFilter" class="form-control">
+                        <option value="">جميع الحالات</option>
+                        <option value="مهتم جديد">مهتم جديد</option>
+                        <option value="تم التواصل">تم التواصل</option>
+                        <option value="تم إرسال عروض">تم إرسال عروض</option>
+                        <option value="معاينة ميدانية">معاينة ميدانية</option>
+                        <option value="تمت الصفقة">تمت الصفقة بنجاح</option>
+                    </select>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>العميل والطلب</th>
+                                <th>الميزانية / التفاصيل</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات السريعة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody">
+                            <!-- Injected by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        
+        themeToggle.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            themeToggle.textContent = htmlElement.classList.contains('dark') ? '🌙' : '☀️';
+        });
+
+        // CRM Data Management
+        const clientForm = document.getElementById('clientForm');
+        const clientsTableBody = document.getElementById('clientsTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+
+        const totalClientsEl = document.getElementById('totalClients');
+        const buyClientsEl = document.getElementById('buyClients');
+        const closedClientsEl = document.getElementById('closedClients');
+
+        function getClients() {
+            return JSON.parse(localStorage.getItem('real_estate_clients') || '[]');
+        }
+
+        function saveClients(clients) {
+            localStorage.setItem('real_estate_clients', JSON.stringify(clients));
+            renderClients();
+        }
+
+        clientForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('clientName').value.trim();
+            const phone = document.getElementById('clientPhone').value.trim();
+            const type = document.getElementById('clientType').value;
+            const budget = document.getElementById('clientBudget').value.trim();
+            const status = document.getElementById('clientStatus').value;
+
+            if (name && phone) {
+                const clients = getClients();
+                clients.unshift({ id: Date.now(), name, phone, type, budget, status });
+                saveClients(clients);
+                clientForm.reset();
+            }
+        });
+
+        window.deleteClient = function(id) {
+            if (confirm('هل أنت متأكد من حذف هذا العميل؟')) {
+                let clients = getClients();
+                clients = clients.filter(c => c.id !== id);
+                saveClients(clients);
+            }
+        }
+
+        function renderClients() {
+            const clients = getClients();
+            const search = searchInput.value.toLowerCase();
+            const statusVal = statusFilter.value;
+
+            // Update Stats
+            totalClientsEl.textContent = clients.length;
+            buyClientsEl.textContent = clients.filter(c => c.type === 'شراء' || c.type === 'استثمار').length;
+            closedClientsEl.textContent = clients.filter(c => c.status === 'تمت الصفقة بنجاح').length;
+
+            const filtered = clients.filter(c => {
+                const matchSearch = c.name.toLowerCase().includes(search) || c.budget.toLowerCase().includes(search) || c.phone.includes(search);
+                const matchStatus = statusVal === '' || c.status === statusVal;
+                return matchSearch && matchStatus;
+            });
+
+            clientsTableBody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                clientsTableBody.innerHTML = `<tr><td colspan="4" class="empty-state">لا يوجد عملاء مسجلون حالياً. ابدأ بإضافة عميلك الأول من النموذج الجانبي.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(client => {
+                // Clean phone number and fix WhatsApp format (replace leading 00 or 0 with correct international format)
+                let cleanPhone = client.phone.replace(/[^0-9+]/g, '');
+                if (cleanPhone.startsWith('00')) {
+                    cleanPhone = '+' + cleanPhone.slice(2);
+                } else if (!cleanPhone.startsWith('+')) {
+                    // If user entered local number without 00 or +, handle appropriately or assume country code if needed
+                    cleanPhone = '+' + cleanPhone;
+                }
+
+                const waMessage = encodeURIComponent(`مرحباً بك أستاذ ${client.name}، بخصوص طلبك العقاري (${client.type})...`);
+                const waLink = `https://wa.me/${cleanPhone}?text=${waMessage}`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <strong>${client.name}</strong><br>
+                        <span style="font-size:0.85rem; color:var(--text-secondary);" dir="ltr">${client.phone}</span>
+                    </td>
+                    <td>
+                        <span class="badge">${client.type}</span><br>
+                        <span style="font-size:0.85rem;">${client.budget || 'غير محددة'}</span>
+                    </td>
+                    <td><span class="badge" style="background:${client.status === 'تمت الصفقة بنجاح' ? 'rgba(34,197,94,0.15)' : 'var(--tag-bg)'}; color:${client.status === 'تمت الصفقة بنجاح' ? '#22c55e' : 'var(--accent-gold);'}">${client.status}</span></td>
+                    <td>
+                        <div class="actions-cell">
+                            <a href="${waLink}" target="_blank" class="whatsapp-action">واتساب</a>
+                            <button onclick="deleteClient(${client.id})" class="delete-action">حذف</button>
+                        </div>
+                    </td>
+                `;
+                clientsTableBody.appendChild(tr);
+            });
+        }
+
+        searchInput.addEventListener('input', renderClients);
+        statusFilter.addEventListener('change', renderClients);
+
+        // Initial Load
+        renderClients();
+    </script>
+</body>
+</html>
